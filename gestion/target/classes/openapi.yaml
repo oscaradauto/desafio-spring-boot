@@ -1,0 +1,176 @@
+openapi: 3.0.1
+info:
+  title: Gestión de Tareas API
+  version: 1.0.0
+
+paths:
+  /auth/login:
+    post:
+      summary: Autenticar usuario
+      operationId: authLogin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Autenticación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+
+  /tareas:
+    get:
+      summary: Obtener todas las tareas
+      operationId: getTareas
+      tags:
+        - Tareas
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de tareas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TareaDto'
+
+    post:
+      summary: Crear nueva tarea
+      operationId: createTarea
+      tags:
+        - Tareas
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TareaDto'
+      responses:
+        '201':
+          description: Tarea creada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TareaDto'
+
+  /tareas/{id}:
+    get:
+      summary: Obtener tarea por ID
+      operationId: getTareaById
+      tags:
+        - Tareas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Tarea encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TareaDto'
+        '404':
+          description: Tarea no encontrada
+
+    put:
+      summary: Actualizar tarea por ID
+      operationId: updateTarea
+      tags:
+        - Tareas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TareaDto'
+      responses:
+        '200':
+          description: Tarea actualizada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TareaDto'
+
+    delete:
+      summary: Eliminar tarea por ID
+      operationId: deleteTarea
+      tags:
+        - Tareas
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Tarea eliminada satisfactoriamente
+          content:
+            text/plain:
+              schema:
+                type: string
+
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+
+    TareaDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        titulo:
+          type: string
+        descripcion:
+          type: string
+        estado:
+          type: string
+        fechaVencimiento:
+          type: string
+          format: date
